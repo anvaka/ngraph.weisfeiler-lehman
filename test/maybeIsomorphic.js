@@ -1,6 +1,6 @@
 let test = require('tap').test;
 let fromDot = require('ngraph.fromdot');
-let {maybeIsomorphic} = require('..');
+let {maybeIsomorphic, getGraphWLKernel} = require('..');
 let generator = require('ngraph.generators');
 
 test('it gives no for non-isomorphic graphs', t => {
@@ -62,5 +62,25 @@ test('it gives yes for maybe isomorphic graphs from generators library', t => {
   let b = generator.grid(10, 10);
 
   t.equal(maybeIsomorphic(a, b), true, 'Graphs are isomorphic');
+  t.end();
+});
+
+test('it can count graph kernel', t => {
+  let a = fromDot(`
+graph A {
+  a -> {b; c; d};
+  b -> c;
+  d -> {c; e; f};
+}`);
+
+  let b = fromDot(`
+graph A {
+  a -> {b; c};
+  b -> {c; d};
+  d -> {e; c};
+  c -> f;
+}`);
+  let res = getGraphWLKernel(a, b, 2);
+  t.equal(res, 0.7826237921249264, 'Kernel is as expected');
   t.end();
 })

@@ -1,5 +1,6 @@
 module.exports.maybeIsomorphic = maybeIsomorphic;
 module.exports.computeLabels = computeLabels;
+module.exports.getGraphWLKernel = getGraphWLKernel;
 
 function maybeIsomorphic(graphA, graphB) {
   if (graphA.getNodeCount() !== graphB.getNodeCount()) return false;
@@ -47,6 +48,52 @@ function maybeIsomorphic(graphA, graphB) {
     prevBLabels = bLabels.labels;
   }
   return true;
+}
+
+function getGraphWLKernel(a, b, iterations) {
+  let dict = new Map();
+  let prevA, prevB;
+  let aVector = [];
+  let bVector = [];
+  let globalHistogramIndex = new Map();
+
+  for (let i = 0; i < iterations; ++i) {
+    let {labels: aLabels, wordCount: aWordCount} = computeLabels(a, prevA, dict);
+    let {labels: bLabels, wordCount: bWordCount} = computeLabels(b, prevB, dict);
+    prevA = aLabels;
+    prevB = bLabels;
+    addToGlobal(globalHistogramIndex, aWordCount);
+    addToGlobal(globalHistogramIndex, bWordCount);
+
+    appendToVector(aVector, aWordCount, bWordCount, globalHistogramIndex);
+    appendToVector(bVector, bWordCount, aWordCount, globalHistogramIndex);
+  }
+
+  return similarity(aVector, bVector);
+}
+
+function addToGlobal(keyToIndex, keys) {
+  keys.forEach((v, key) => {
+    if (keyToIndex.has(key)) return;
+    keyToIndex.set(key, keyToIndex.size);
+  });
+}
+
+function appendToVector(v, found, other, indexLookup) {
+  let unifiedLabels = new Set(found.keys());
+  other.forEach((v, k) => unifiedLabels.add(k));
+  Array.from(unifiedLabels).sort().forEach(k => {
+    let index = indexLookup.get(k);
+    v[index] = (v[index] || 0) + found.get(k) || 0;
+  });
+}
+
+function dot(a, b) {
+  return a.reduce((s, c, i) => s + c * b[i], 0);
+}
+
+function similarity(a, b) {
+  return dot(a, b) / Math.sqrt(dot(a, a) * dot(b, b));
 }
 
 function computeLabels(graph, prevLabels, dictionary) {
