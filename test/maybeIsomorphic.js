@@ -1,6 +1,7 @@
 let test = require('tap').test;
 let fromDot = require('ngraph.fromdot');
-let {maybeIsomorphic, getGraphWLKernel} = require('..');
+let generate = require('ngraph.generators');
+let {maybeIsomorphic, getGraphWLCosineSimilarity, getGraphWLJaccardSimilarity} = require('..');
 let generator = require('ngraph.generators');
 
 test('it gives no for non-isomorphic graphs', t => {
@@ -65,7 +66,7 @@ test('it gives yes for maybe isomorphic graphs from generators library', t => {
   t.end();
 });
 
-test('it can count graph kernel', t => {
+test('it can compute cosine similarity', t => {
   let a = fromDot(`
 graph A {
   a -> {b; c; d};
@@ -80,7 +81,44 @@ graph A {
   d -> {e; c};
   c -> f;
 }`);
-  let res = getGraphWLKernel(a, b, 2);
+  let res = getGraphWLCosineSimilarity(a, b, 2);
   t.equal(res, 0.7826237921249264, 'Kernel is as expected');
+  res = getGraphWLCosineSimilarity(b, a, 2);
+  t.equal(res, 0.7826237921249264, 'Conjugate kernel is as expected');
+  res = getGraphWLCosineSimilarity(b, b, 2);
+  t.equal(res, 1, 'Self similarity is good');
+  t.end();
+});
+
+test('it can compute jaccard similarity', t => {
+  let a = fromDot(`
+graph A {
+  a -> {b; c; d};
+  b -> c;
+  d -> {c; e; f};
+}`);
+
+  let b = fromDot(`
+graph A {
+  a -> {b; c};
+  b -> {c; d};
+  d -> {e; c};
+  c -> f;
+}`);
+  let res = getGraphWLJaccardSimilarity(a, b, 2);
+  t.equal(res, 0.5, 'Kernel is as expected');
+  res = getGraphWLJaccardSimilarity(b, a, 2);
+  t.equal(res, 0.5, 'Conjugate kernel is as expected');
+  res = getGraphWLJaccardSimilarity(a, a, 2);
+  t.equal(res, 1, 'A Self similarity');
+  res = getGraphWLJaccardSimilarity(b, b, 2);
+  t.equal(res, 1, 'B Self similarity');
+  t.end();
+})
+test('it can compute jaccard similarity on binary trees', t => {
+  let a = generate.balancedBinTree(4); 
+  let b = generate.balancedBinTree(5); 
+  let res = getGraphWLJaccardSimilarity(a, b, 2);
+t.equal(res, 0.49206349206349204, 'Kernel is as expected');
   t.end();
 })

@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <a href="#" @click.prevent='runLayout' class='btn-command'>Make {{stepCount}} layout steps</a>
-    <a href="#" @click.prevent='oneStep' class='btn-command'>Make Weisfeiler-Lehman step</a>
+    <!--a href="#" @click.prevent='oneStep' class='btn-command'>Make Weisfeiler-Lehman step</a-->
   </div>
 </template>
 
