@@ -215,5 +215,5 @@ function computeLabels(graph, prevLabels, dictionary) {
     wordCount.set(compressedKey, (wordCount.get(compressedKey) || 0) + 1);
   });
 
-  return {labels, prevLabels, uncompressedLabels, wordCount}
+  return {labels, prevLabels, uncompressedLabels, wordCount, graph}
 }

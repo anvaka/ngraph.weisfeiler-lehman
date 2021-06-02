@@ -1,6 +1,6 @@
 # ngraph.weisfeiler-lehman
 
-This library includes set of utilities that can:
+Set of utilities that can:
 
 * Check if two graphs are maybe isomorphic
 * Find Cosine similarity between two graphs
@@ -48,7 +48,7 @@ From the library's standpoint, we call `kernel` a vector that counts how many ti
 each label appeared between multiple graphs over `N` iterations of Weisfeiler-Lehman
 labeling schema.
 
-With each iteration, node collects labels information from more distance places of the 
+With each iteration, node collects labels information from more distant places of the 
 graph.
 
 ``` js
@@ -89,7 +89,7 @@ compare two graphs.
 ### Cosine similarity of the graphs
 
 ``` js
-let {getGraphWLCosineSimilarity} = require('ngraph.weisfeiler-lehman');
+const {getGraphWLCosineSimilarity} = require('ngraph.weisfeiler-lehman');
 
 // returns cosine similarity of labels after two iterations of the labeling schema
 let similarity = getGraphWLCosineSimilarity(a, b, 2);
@@ -108,7 +108,7 @@ shared labels between two graphs (smaller value), and thus we can apply Jaccard 
 to determine distance based on labels co-occurrence in the kernel vector:
 
 ``` js
-let {getGraphWLJaccardSimilarity} = require('ngraph.weisfeiler-lehman');
+const {getGraphWLJaccardSimilarity} = require('ngraph.weisfeiler-lehman');
 
 // returns cosine similarity of labels after two iterations of the labeling schema
 let similarity = getGraphWLJaccardSimilarity(a, b, 2);
